@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4b5fc5;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            color: red !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Temperature Converter</h1>
+
+        <input type="number" id="temperature"
+               placeholder="Enter temperature" step="any">
+
+        <select id="from">
+            <option value="C">Celsius (°C)</option>
+            <option value="F">Fahrenheit (°F)</option>
+            <option value="K">Kelvin (K)</option>
+        </select>
+
+        <select id="to">
+            <option value="F">Fahrenheit (°F)</option>
+            <option value="C">Celsius (°C)</option>
+            <option value="K">Kelvin (K)</option>
+        </select>
+
+        <button onclick="convertTemperature()">Convert</button>
+
+        <div id="result" aria-live="polite">
+            Result will appear here
+        </div>
+    </div>
+
+    <script>
+        const temperature = document.getElementById("temperature");
+        const from = document.getElementById("from");
+        const to = document.getElementById("to");
+        const result = document.getElementById("result");
+
+        function convertTemperature() {
+            const value = temperature.value;
+            const input = Number(value);
+
+            result.classList.remove("error");
+
+            if (value.trim() === "" || !Number.isFinite(input)) {
+                showError("Please enter a valid temperature.");
+                return;
+            }
+
+            let celsius;
+
+            if (from.value === "C") {
+                celsius = input;
+            } else if (from.value === "F") {
+                celsius = (input - 32) * 5 / 9;
+            } else {
+                celsius = input - 273.15;
+            }
+
+            if (celsius < -273.15 - 1e-10) {
+                showError("Error: Temperature cannot be below absolute zero!");
+                return;
+            }
+
+            let converted;
+
+            if (to.value === "C") {
+                converted = celsius;
+            } else if (to.value === "F") {
+                converted = (celsius * 9 / 5) + 32;
+            } else {
+                converted = celsius + 273.15;
+            }
+
+            const units = {
+                C: "°C",
+                F: "°F",
+                K: "K"
+            };
+
+            result.textContent =
+                input + " " + units[from.value] + " = " +
+                converted.toFixed(2) + " " + units[to.value];
+        }
+
+        function showError(message) {
+            result.textContent = message;
+            result.classList.add("error");
+        }
+
+        temperature.addEventListener("input", convertTemperature);
+        from.addEventListener("change", convertTemperature);
+        to.addEventListener("change", convertTemperature);
+    </script>
+</body>
+</html>
